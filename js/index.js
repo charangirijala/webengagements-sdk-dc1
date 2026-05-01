@@ -68,36 +68,57 @@ document.getElementById("catalog-mobile").addEventListener("click", () => {
 SalesforceInteractions.init({
   cookieDomain: "domain.com",
   consents: new Promise((resolve) => {
+    const optInBtn = document.getElementById("opt-in");
+    const optOutBtn = document.getElementById("opt-out");
+    const consentStatusDiv = document.getElementById("consent-status");
+    const consentPayloadPre = document.getElementById("consent-payload");
+
     // user clicks button that grants consent
-    //     let optStatus = "";
-    document.getElementById("opt-in").addEventListener(
+    optInBtn.addEventListener(
       "click",
       () => {
-        //    optStatus = "opt-in";
-        //    console.log("opt in called");
-        resolve([
+        optInBtn.style.display = "none";
+        optOutBtn.style.display = "none";
+        consentStatusDiv.textContent = "Consent Status: Opt In";
+        consentStatusDiv.className = "mt-2 text-success fw-bold";
+
+        const payload = [
           {
             provider: "Test Provider",
             purpose: "Tracking",
             status: SalesforceInteractions.ConsentStatus.OptIn,
           },
-        ]);
+        ];
+
+        consentPayloadPre.textContent = JSON.stringify(payload, null, 2);
+        consentPayloadPre.style.display = "block";
+
+        resolve(payload);
       },
       { once: true },
     );
 
     // User clicks button that revokes consent
-    document.getElementById("opt-out").addEventListener(
+    optOutBtn.addEventListener(
       "click",
       () => {
-        //    optStatus = "opt-out";
-        resolve([
+        optInBtn.style.display = "none";
+        optOutBtn.style.display = "none";
+        consentStatusDiv.textContent = "Consent Status: Opt Out";
+        consentStatusDiv.className = "mt-2 text-danger fw-bold";
+
+        const payload = [
           {
             provider: "Test Provider",
             purpose: "Tracking",
             status: SalesforceInteractions.ConsentStatus.OptOut,
           },
-        ]);
+        ];
+
+        consentPayloadPre.textContent = JSON.stringify(payload, null, 2);
+        consentPayloadPre.style.display = "block";
+
+        resolve(payload);
       },
       { once: true },
     );

@@ -13,12 +13,13 @@
   </head>
   <body class="bg-light">
     <div class="container py-5">
-      <h1 class="mb-4">Web Connector Schema</h1>
-      <div id="schema-container"></div>
-      <div class="mt-4">
+      <div class="mt-4 p-3 bg-white rounded shadow-sm">
+        <h5>Consent Dialog</h5>
+        <p class="fs-6">Consent values sent to Data cloud</p>
         <button id="opt-in" class="btn btn-success me-2">Opt In</button>
         <button id="opt-out" class="btn btn-danger">Opt Out</button>
         <div id="consent-status" class="mt-2"></div>
+        <pre id="consent-payload" class="mt-3 bg-light p-2 rounded border" style="display: none; font-size: 0.875em;"></pre>
       </div>
       <div class="mt-4">
         <h5>Catalog Events</h5>
@@ -30,6 +31,11 @@
         </button>
         <div id="catalog-status" class="mt-2"></div>
       </div>
+      <div class="mt-4 p-3 bg-white rounded shadow-sm">
+        <h5 class="mb-4">Web Connector Schema</h5>
+        <pre id="schema-container" style="height: 20rem"></pre>
+      </div>
+
       <div class="mt-4 p-3 bg-white rounded shadow-sm">
         <p class="mb-2">Useful resources for building this site:</p>
         <ul class="mb-0">
@@ -59,7 +65,7 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdn.c360a.salesforce.com/beacon/c360a/2d1d2913-6f72-4691-9fd0-1eae68e072d7/scripts/c360a.min.js"></script>
+    <script src="https://cdn.c360a.salesforce.com/beacon/c360a/576bc900-527d-4d13-9638-fbfb1604234d/scripts/c360a.min.js"></script>
     <script src="./js/index.js"></script>
   </body>
 </html>
