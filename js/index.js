@@ -66,7 +66,7 @@ document.getElementById("catalog-mobile").addEventListener("click", () => {
 
 // Initialize with consent provided by a user interaction
 SalesforceInteractions.init({
-  cookieDomain: "domain.com",
+  cookieDomain: "github.io",
   consents: new Promise((resolve) => {
     const optInBtn = document.getElementById("opt-in");
     const optOutBtn = document.getElementById("opt-out");
