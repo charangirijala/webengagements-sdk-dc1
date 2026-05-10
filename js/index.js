@@ -23,45 +23,155 @@ async function loadSchema() {
 
 loadSchema();
 
-// Function to send catalog event with different sourceChannel values
-function sendCatalogEvent(sourceChannel) {
+// Function to send catalog event
+function sendCatalogEvent() {
   const statusDiv = document.getElementById("catalog-status");
-  statusDiv.textContent = `Sending Catalog event with sourceChannel: ${sourceChannel}...`;
+  const payloadPre = document.getElementById("catalog-payload");
+  statusDiv.textContent = `Sending Catalog event...`;
+  statusDiv.className = "mt-2 text-warning";
+
+  try {
+    if (typeof SalesforceInteractions === "undefined") {
+      throw new Error("SalesforceInteractions SDK not loaded");
+    }
+    // Note: deviceId__c sent automatically
+    // eventType__c sent automatically as "catalog"
+    // catalog_type__c need to be set
+    // eventId__c sent automatically
+    // Source channel sent automatically as web or mobile based on the device
+
+    const payload = {
+      interaction: {
+        name: SalesforceInteractions.CatalogObjectInteractionName.ViewCatalogObject,
+        catalogObject: {
+          type: "Product",
+          id: "65e4e737",
+          attributes: {
+            category: "Shoes",
+            description: "Classic black running shoes",
+            pageView: 1,
+            personalizationContentId: "promo-xyz-123",
+            personalizationId: "p13n-algo-99",
+            sourceLocale: navigator.language || "en-US",
+            sourcePageType: "ProductDetail",
+            sourceUrl: window.location.href,
+            sourceUrlReferrer: document.referrer
+          },
+        },
+      },
+    };
+
+    SalesforceInteractions.sendEvent(payload);
+
+    statusDiv.textContent = `Catalog event sent successfully!`;
+    statusDiv.className = "mt-2 text-success fw-bold";
+
+    payloadPre.textContent = JSON.stringify(payload, null, 2);
+    payloadPre.style.display = "block";
+  } catch (error) {
+    statusDiv.textContent = `Failed to send catalog event: ${error.message}`;
+    statusDiv.className = "mt-2 text-danger fw-bold";
+  }
+}
+
+// Event listener for catalog button
+document.getElementById("catalog-event").addEventListener("click", () => {
+  sendCatalogEvent();
+});
+
+// Function to send cart event
+function sendCartEvent() {
+  const statusDiv = document.getElementById("cart-status");
+  const payloadPre = document.getElementById("cart-payload");
+  statusDiv.textContent = `Sending Add to Cart event...`;
+  statusDiv.className = "mt-2 text-warning";
 
   try {
     if (typeof SalesforceInteractions === "undefined") {
       throw new Error("SalesforceInteractions SDK not loaded");
     }
 
-    SalesforceInteractions.sendEvent({
+    const payload = {
       interaction: {
-        name: "View Catalog Object",
-        catalogObject: {
-          type: "Product",
-          id: "65e4e737",
+        name: SalesforceInteractions.CartInteractionName.AddToCart,
+        lineItem: {
+          catalogObjectType: "Product",
+          catalogObjectId: "65e4e737",
+          price: 59.99,
+          quantity: 1,
           attributes: {
-            description: "Classic black running shoes",
-          },
-        },
-      },
-      sourceChannel: sourceChannel,
-    });
+            category: "Shoes",
+            currency: "USD"
+          }
+        }
+      }
+    };
 
-    statusDiv.textContent = `Catalog event sent successfully with sourceChannel: ${sourceChannel}!`;
-    statusDiv.className = "mt-2 text-success";
+    SalesforceInteractions.sendEvent(payload);
+
+    statusDiv.textContent = `Add to Cart event sent successfully!`;
+    statusDiv.className = "mt-2 text-success fw-bold";
+
+    payloadPre.textContent = JSON.stringify(payload, null, 2);
+    payloadPre.style.display = "block";
   } catch (error) {
-    statusDiv.textContent = `Failed to send catalog event: ${error.message}`;
-    statusDiv.className = "mt-2 text-danger";
+    statusDiv.textContent = `Failed to send cart event: ${error.message}`;
+    statusDiv.className = "mt-2 text-danger fw-bold";
   }
 }
 
-// Event listeners for catalog buttons
-document.getElementById("catalog-web").addEventListener("click", () => {
-  sendCatalogEvent("web");
+// Event listener for cart button
+document.getElementById("cart-event").addEventListener("click", () => {
+  sendCartEvent();
 });
 
-document.getElementById("catalog-mobile").addEventListener("click", () => {
-  sendCatalogEvent("mobile");
+// Function to send order event
+function sendOrderEvent() {
+  const statusDiv = document.getElementById("order-status");
+  const payloadPre = document.getElementById("order-payload");
+  statusDiv.textContent = `Sending Purchase event...`;
+  statusDiv.className = "mt-2 text-warning";
+
+  try {
+    if (typeof SalesforceInteractions === "undefined") {
+      throw new Error("SalesforceInteractions SDK not loaded");
+    }
+
+    const payload = {
+      interaction: {
+        name: SalesforceInteractions.OrderInteractionName.Purchase,
+        order: {
+          id: "ORDER-" + Math.floor(Math.random() * 100000),
+          totalValue: 59.99,
+          currency: "USD",
+          lineItems: [
+            {
+              catalogObjectType: "Product",
+              catalogObjectId: "65e4e737",
+              quantity: 1,
+              price: 59.99
+            }
+          ]
+        }
+      }
+    };
+
+    SalesforceInteractions.sendEvent(payload);
+
+    statusDiv.textContent = `Purchase event sent successfully!`;
+    statusDiv.className = "mt-2 text-success fw-bold";
+
+    payloadPre.textContent = JSON.stringify(payload, null, 2);
+    payloadPre.style.display = "block";
+  } catch (error) {
+    statusDiv.textContent = `Failed to send purchase event: ${error.message}`;
+    statusDiv.className = "mt-2 text-danger fw-bold";
+  }
+}
+
+// Event listener for order button
+document.getElementById("order-event").addEventListener("click", () => {
+  sendOrderEvent();
 });
 
 // Initialize with consent provided by a user interaction
@@ -81,6 +191,19 @@ SalesforceInteractions.init({
         optOutBtn.style.display = "none";
         consentStatusDiv.textContent = "Consent Status: Opt In";
         consentStatusDiv.className = "mt-2 text-success fw-bold";
+
+        const catalogBtn = document.getElementById("catalog-event");
+        const cartBtn = document.getElementById("cart-event");
+        const orderBtn = document.getElementById("order-event");
+        catalogBtn.disabled = false;
+        cartBtn.disabled = false;
+        orderBtn.disabled = false;
+        document.getElementById("catalog-status").textContent = "";
+        document.getElementById("catalog-status").className = "mt-2";
+        document.getElementById("cart-status").textContent = "";
+        document.getElementById("cart-status").className = "mt-2";
+        document.getElementById("order-status").textContent = "";
+        document.getElementById("order-status").className = "mt-2";
 
         const payload = [
           {
@@ -106,6 +229,21 @@ SalesforceInteractions.init({
         optOutBtn.style.display = "none";
         consentStatusDiv.textContent = "Consent Status: Opt Out";
         consentStatusDiv.className = "mt-2 text-danger fw-bold";
+
+        const catalogBtn = document.getElementById("catalog-event");
+        const cartBtn = document.getElementById("cart-event");
+        const orderBtn = document.getElementById("order-event");
+        catalogBtn.disabled = true;
+        cartBtn.disabled = true;
+        orderBtn.disabled = true;
+        const msg = "Cannot send events to Data Cloud as consent is opted out";
+        const msgClass = "mt-2 text-danger fw-bold";
+        document.getElementById("catalog-status").textContent = msg;
+        document.getElementById("catalog-status").className = msgClass;
+        document.getElementById("cart-status").textContent = msg;
+        document.getElementById("cart-status").className = msgClass;
+        document.getElementById("order-status").textContent = msg;
+        document.getElementById("order-status").className = msgClass;
 
         const payload = [
           {
